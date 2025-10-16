@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Commande {
+  id_commande     Int      @id @default(autoincrement())
+  date_heure      DateTime @default(now())
+  nom             String
+  telephone       String
+  wilaya_code     Int?
+  wilaya          String?
+  commune         String?
+  nombre_cartes   Int?     @default(1)
+  prix_total      Decimal? @db.Decimal(10, 2)
+  reseaux_sociaux String?
+  statut          Statut   @default(EN_ATTENTE)
+}
+
+enum Statut {
+  EN_ATTENTE
+  CONFIRMEE
+  LIVREE
+  ANNULEE
+}
