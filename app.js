@@ -27,7 +27,7 @@ app.get("/test-db", async (req, res) => {
 app.get("/insert-example", async (req, res) => {
   try {
     const [result] = await db.query(`
-      INSERT INTO commandes (
+      INSERT INTO visit_card (
         date_heure,
         nom,
         telephone,
