@@ -24,4 +24,42 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
+app.get("/insert-example", async (req, res) => {
+  try {
+    const [result] = await db.query(`
+      INSERT INTO commandes (
+        date_heure,
+        nom,
+        telephone,
+        wilaya_code,
+        wilaya,
+        commune,
+        nombre_cartes,
+        prix_total,
+        reseaux_sociaux,
+        statut
+      ) VALUES (
+        NOW(),
+        'Nour Islam Aoudia',
+        '0550123456',
+        16,
+        'Alger',
+        'El Madania',
+        2,
+        2000.00,
+        '@islam.lemgale3',
+        'En attente'
+      )
+    `);
+
+    res.json({
+      message: "✅ Exemple inséré avec succès",
+      insertId: result.insertId,
+    });
+  } catch (err) {
+    console.error("Erreur MySQL :", err);
+    res.status(500).json({ error: "Erreur lors de l’insertion" });
+  }
+});
+
 app.listen(port, () => console.log(`✅ Serveur lancé sur le port ${port}`));
