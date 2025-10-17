@@ -1,65 +1,48 @@
 const express = require("express");
+const prisma = require("./prismaClient");
 const app = express();
-const db = require("./db");
-require("dotenv").config();
 
-const port = process.env.PORT || 3000;
+app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("API Node.js connectée !");
+  res.send("Bienvenue sur l'API des commandes de cartes de visite !");
 });
 
-app.get("/test-db", async (req, res) => {
+// 🧠 Route pour insérer une commande
+app.post("/commandes", async (req, res) => {
   try {
-    const [rows] = await db.query("SHOW TABLES");
-    res.json({
-      message: "✅ Liste des tables récupérée avec succès",
-      tables: rows,
+    const commande = await prisma.visit_card.create({
+      data: {
+        nom: req.body.nom,
+        telephone: req.body.telephone,
+        wilaya_code: req.body.wilaya_code,
+        wilaya: req.body.wilaya,
+        commune: req.body.commune,
+        nombre_cartes: req.body.nombre_cartes || 1,
+        prix_total: req.body.prix_total,
+        reseaux_sociaux: req.body.reseaux_sociaux,
+        statut: "EN_ATTENTE", // Changed to match enum
+      },
     });
+
+    res.json({ message: "✅ Commande créée", commande });
   } catch (err) {
-    console.error("Erreur MySQL :", err);
-    res
-      .status(500)
-      .json({ error: "Erreur lors de la récupération des tables" });
+    console.error("Erreur Prisma :", err);
+    res.status(500).json({ error: "Erreur lors de la création" });
   }
 });
 
-app.get("/insert-example", async (req, res) => {
+// 🧠 Route pour lire toutes les commandes
+app.get("/commandes", async (req, res) => {
   try {
-    const [result] = await db.query(`
-      INSERT INTO visit_card (
-        date_heure,
-        nom,
-        telephone,
-        wilaya_code,
-        wilaya,
-        commune,
-        nombre_cartes,
-        prix_total,
-        reseaux_sociaux,
-        statut
-      ) VALUES (
-        NOW(),
-        'Nour Islam Aoudia',
-        '0550123456',
-        16,
-        'Alger',
-        'El Madania',
-        2,
-        2000.00,
-        '@islam.lemgale3',
-        'En attente'
-      )
-    `);
-
-    res.json({
-      message: "✅ Exemple inséré avec succès",
-      insertId: result.insertId,
-    });
+    const commandes = await prisma.visit_card.findMany();
+    res.json(commandes);
   } catch (err) {
-    console.error("Erreur MySQL :", err);
-    res.status(500).json({ error: "Erreur lors de l’insertion" });
+    console.error("Erreur Prisma :", err);
+    res.status(500).json({ error: "Erreur lors de la lecture" });
   }
 });
 
-app.listen(port, () => console.log(`✅ Serveur lancé sur le port ${port}`));
+app.listen(3000, () =>
+  console.log("✅ API Prisma en ligne sur le port: http://localhost:3000")
+);
