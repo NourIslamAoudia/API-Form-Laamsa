@@ -1,30 +1,6 @@
 const prisma = require("../lib/prisma");
 
-const usersController = {
-  /* ----------------------------------------
-     Get all users
-  -----------------------------------------*/
-  getAllUsers: async (req, res) => {
-    try {
-      const users = await prisma.user.findMany();
-      res.json(users);
-    } catch (error) {
-      console.error("Erreur lors de la récupération des utilisateurs:", error);
-      res.status(500).json({
-        success: false,
-        message: "Erreur serveur",
-      });
-    }
-  },
-  getUserCommandes: async (req, res) => {
-    try {
-      const commandes = await prisma.visit_card.findMany();
-      res.json(commandes);
-    } catch (err) {
-      console.error("Erreur Prisma :", err);
-      res.status(500).json({ error: "Erreur lors de la lecture" });
-    }
-  },
+const orderController = {
   createCommande: async (req, res) => {
     try {
       const commande = await prisma.visit_card.create({
@@ -49,4 +25,4 @@ const usersController = {
   },
 };
 
-module.exports = usersController;
+module.exports = orderController;

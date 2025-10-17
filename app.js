@@ -7,11 +7,11 @@ const app = express();
 app.use(express.json());
 
 const authRouter = require("./routers/auth");
-const usersRouter = require("./routers/users");
+const OrderRouter = require("./routers/order");
 
-app.use("/admin", protectedRoute, usersRouter);
+app.use("/addorder", OrderRouter);
 
-app.use("/auth", authRouter);
+app.use("/login", authRouter);
 
 app.get("/", (req, res) => {
   res.send("Bienvenue sur l'API des commandes de cartes de visite !");
