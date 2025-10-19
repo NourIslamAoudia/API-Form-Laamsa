@@ -32,10 +32,11 @@ const orderController = {
   -----------------------------------------*/
   getOrderById: async (req, res) => {
     try {
-      const { id } = req.params;
+      // L'ID est déjà validé par le middleware
+      const id = parseInt(req.params.id, 10);
 
       const order = await prisma.visit_card.findUnique({
-        where: { id_commande: parseInt(id) },
+        where: { id_commande: id },
       });
 
       if (!order) {
@@ -63,19 +64,12 @@ const orderController = {
   -----------------------------------------*/
   updateOrderStatus: async (req, res) => {
     try {
-      const { id } = req.params;
+      // L'ID et le statut sont déjà validés par le middleware
+      const id = parseInt(req.params.id, 10);
       const { statut } = req.body;
 
-      const validStatus = ["EN_ATTENTE", "CONFIRMEE", "LIVREE", "ANNULEE"];
-      if (!validStatus.includes(statut)) {
-        return res.status(400).json({
-          success: false,
-          message: "Statut invalide. Valeurs autorisées : EN_ATTENTE, CONFIRMEE, LIVREE, ANNULEE.",
-        });
-      }
-
       const updatedOrder = await prisma.visit_card.update({
-        where: { id_commande: parseInt(id) },
+        where: { id_commande: id },
         data: { statut },
       });
 
@@ -86,6 +80,15 @@ const orderController = {
       });
     } catch (error) {
       console.error("Erreur lors de la mise à jour du statut :", error);
+
+      // Gestion de l'erreur si la commande n'existe pas
+      if (error.code === "P2025") {
+        return res.status(404).json({
+          success: false,
+          message: "Commande non trouvée.",
+        });
+      }
+
       res.status(500).json({
         success: false,
         message: "Erreur serveur lors de la mise à jour du statut.",
@@ -98,10 +101,11 @@ const orderController = {
   -----------------------------------------*/
   deleteOrder: async (req, res) => {
     try {
-      const { id } = req.params;
+      // L'ID est déjà validé par le middleware
+      const id = parseInt(req.params.id, 10);
 
       await prisma.visit_card.delete({
-        where: { id_commande: parseInt(id) },
+        where: { id_commande: id },
       });
 
       res.status(200).json({
@@ -110,6 +114,15 @@ const orderController = {
       });
     } catch (error) {
       console.error("Erreur lors de la suppression de la commande :", error);
+
+      // Gestion de l'erreur si la commande n'existe pas
+      if (error.code === "P2025") {
+        return res.status(404).json({
+          success: false,
+          message: "Commande non trouvée.",
+        });
+      }
+
       res.status(500).json({
         success: false,
         message: "Erreur serveur lors de la suppression de la commande.",
