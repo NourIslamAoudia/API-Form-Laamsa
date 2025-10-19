@@ -10,6 +10,7 @@ const orderController = {
           wilaya_code: req.body.wilaya_code,
           wilaya: req.body.wilaya,
           commune: req.body.commune,
+          livraison: req.body.livraison,
           nombre_cartes: req.body.nombre_cartes || 1,
           prix_total: req.body.prix_total,
           reseaux_sociaux: req.body.reseaux_sociaux,

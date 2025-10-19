@@ -16,6 +16,7 @@ model visit_card {
   wilaya_code     Int?
   wilaya          String?
   commune         String?
+  livraison       String?
   nombre_cartes   Int?     @default(1)
   prix_total      Decimal? @db.Decimal(10, 2)
   reseaux_sociaux String?
