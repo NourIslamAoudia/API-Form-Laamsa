@@ -3,15 +3,13 @@ require("dotenv").config();
 const protectedRoute = require("./midleware/auth-middleware");
 const cors = require("cors");
 const mongoSanitize = require("express-mongo-sanitize");
-
 const app = express();
 
-// === Middlewares globaux ===
 app.use(cors());
-app.use(express.json({ limit: "10kb" }));
+app.use(express.json({ limit: "10kb" })); // Limite la taille des requêtes
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
-// Protection NoSQL Injection
+// Protection contre les injections NoSQL en supprimant les caractères $ et .
 app.use(
   mongoSanitize({
     replaceWith: "_",
@@ -21,26 +19,20 @@ app.use(
   })
 );
 
-// === Routes ===
 const authRouter = require("./routers/auth");
 const OrderRouter = require("./routers/order");
 const AdminRouter = require("./routers/admin");
 
 app.use("/addorder", OrderRouter);
+
 app.use("/", authRouter);
+
 app.use("/admin", protectedRoute, AdminRouter);
 
 app.get("/", (req, res) => {
   res.send("Bienvenue sur l'API des commandes de cartes de visite !");
 });
 
-// === Export pour Vercel ===
-if (process.env.NODE_ENV !== "vercel") {
-  // Lancement local uniquement
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () =>
-    console.log(`✅ API en ligne sur le port: http://localhost:${PORT}`)
-  );
-}
-
-module.exports = app;
+app.listen(3000, () =>
+  console.log("✅ API Prisma en ligne sur le port: http://localhost:3000")
+);
